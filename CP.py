@@ -214,7 +214,7 @@ class CP:
             response = self.client.api_call(call,item)
         if response.success:
             print("The call was successfull.")
-            return(0)
+            return(response)
         else:
             print("The call failed")
             return(-1)  
