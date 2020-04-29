@@ -118,9 +118,15 @@ for item in list_of_networks:
     print (item)
 for item in list_of_services:
      print (item) """
+
+
+# Instance Class Object and login
 cp=CP.CP("192.168.173.81","admin","admin123")
 
-obj_dictionary=cp.get_host_dict() # dict of hosts key is IP
+# Check for duplicate IP Object
+
+obj_dictionary=cp.get_host_dict() # dict of hosts, key is IP
+
 
 for item in list_of_hosts:
     #print (item[1])
@@ -130,7 +136,7 @@ for item in list_of_hosts:
         cp.add_host(item[0],item[1])
 
 
-
+# Check for duplicate Network Object
 obj_dictionary=cp.get_network_dict()
 
 for item in list_of_networks:
@@ -142,16 +148,34 @@ for item in list_of_networks:
             print (item, obj_dictionary[item[1]])
     else:
         cp.add_network(item[0],item[1],item[2])
-        
+# Check for duplicate TCP port
+# Todo 
+       
+# Check for duplicate TCP port
+# Todo 
 
 # End of object generation
+
+# Generate Policy Package
+mydict= {  "name" : "New_Standard_Package_1",
+            "comments" : "Tchibo Test",
+            "color" : "green",
+            "threat-prevention" : False,
+            "access" : True
+        }   
+
+response=cp.call_api("add-package",mydict)
+if response.success:
+    print ( "New_Standard_Package_1 added")
+# Generate Rules
 
 net_dictionary=cp.get_network_dict()
 host_dictionary=cp.get_host_dict()
 tcp_dictionary=cp.get_tcp_services_dict()
 udp_dictionary=cp.get_udp_services_dict()
 comment=""
-
+cp.commit()
+# Open csv and generate rules
 print ("rulebase generation")
 with open('st.csv', newline='', encoding='utf-8') as f:
     reader = csv.reader(f)
@@ -160,7 +184,7 @@ with open('st.csv', newline='', encoding='utf-8') as f:
         #print(row[0],row[2])
         if (row):
             if re.match("Rule",(row[0])):
-                print (row)
+                #print (row)
                 #print (row [1], row[2], row [3], row[4])
                 # Generate SRC Addresslist
                 if (row[1]!='Any'):
@@ -190,8 +214,8 @@ with open('st.csv', newline='', encoding='utf-8') as f:
                     for k in tcp_dictionary:
                         if (tcp_dictionary[k][0]['port']==row[3]):
                             #print (k,tcp_dictionary[k][0]['port'])
-                            service=tcp_dictionary[k][0]['port']
-                            comment=""
+                            service=tcp_dictionary[k][0]['uid']
+                            comment=row[4]+"_"+row[3]
                             break
                         else:
                             service="Any"
@@ -201,8 +225,8 @@ with open('st.csv', newline='', encoding='utf-8') as f:
                     for k in udp_dictionary:
                         if (udp_dictionary[k][0]['port']==row[3]):
                             #print (k,udp_dictionary[k][0]['port'])
-                            service=udp_dictionary[k][0]['port']
-                            comment=""
+                            service=udp_dictionary[k][0]['uid']
+                            comment=row[4]+"_"+row[3]
                             break
                         else:
                             service="Any"
@@ -211,27 +235,28 @@ with open('st.csv', newline='', encoding='utf-8') as f:
                     # Falls Host
                 elif (row[4]=="Any"):
                     service="Any"
-                    comment=""
-                        
+                    comment="Any"
+                    
+                elif (row[4]!="Any"):
+                    service="Any"
+                    coment=row[4],row[3]
                 else:
                     service="Any"
                     comment=row[4]
+
                 mydict={"name": row[0], "layer": "New_Standard_Package_1 Network", "position": "top", "action": "accept","track" : {
-      "type" : "Log" }, "source": [src], "destination":[ dst ]  }
-                #result=cp.add_rule(mydict)
-                print ("{} {} {} {} {}".format(row[0],src,dst,service,comment))
+      "type" : "Log" }, "source": [src], "destination":[ dst ], "comments" : comment  }
+                response = cp.call_api("add-access-rule",mydict)
+                if response.success:
+                    print("The rule: '{}' has been added successfully".format(mydict['name']))
+                    print ("name: {} src: {} dst: {} srv: {} comment: {}".format(row[0],src,dst,service,comment))
+                else:
+                    print ("Error adding rule {}".format(row[0]))
 
 
 
 
-mydict= {  "name" : "New_Standard_Package_1",
-            "comments" : "Tchibo Test",
-            "color" : "green",
-            "threat-prevention" : False,
-            "access" : True
-        }   
 
-cp.call_api("add-package",mydict)
 
 cp.commit()
 cp.logout()
