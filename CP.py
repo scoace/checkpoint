@@ -56,11 +56,11 @@ class CP:
         # add a rule to the top of the "Network" layer
         #add_rule_response = self.client.api_call("add-access-rule",
         #                                            {"name": rule_name, "layer": "Network", "position": "top"})
-        add_rule_response = self.client.api_call("add-access-rule",mydict)
-        if add_rule_response.success:
+        response = self.client.api_call("add-access-rule",mydict)
+        if response.success:
 
             print("The rule: '{}' has been added successfully".format(mydict['name']))
-            return(0)
+            return(response)
         else:
             return(-1)
             
@@ -146,7 +146,7 @@ class CP:
                 #print (len(response.as_dict()))
                 mydict = response.as_dict()
                 num_networks=mydict['data']['total']
-                print (mydict)
+                #print (mydict)
                 tmp_list_of_services = mydict['res_obj']['data']['objects']
                 list_of_services=list_of_services+tmp_list_of_services
                 count = len(tmp_list_of_services)
@@ -217,7 +217,7 @@ class CP:
             return(response)
         else:
             print("The call failed")
-            return(-1)  
+            return(response)  
         
     def logout(self):
 
