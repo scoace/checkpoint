@@ -26,23 +26,27 @@ from cpapi import APIClient, APIClientArgs
 
 class CP:
 
-    def __init__(self, ipaddr, username, password, timeout=10, domain=None, port="443"):
+    def __init__(self, ipaddr, username, password, domain=None, port="443"):
 
         self.api_server = ipaddr
         self.username = username
         self.password = password
         self.port = port
         #self.urlbase = "https://{ipaddr}:{port}/".format(ipaddr=self.ipaddr,port=self.port)
-        self.timeout = timeout
-        self.domain = domain
-        client_args = APIClientArgs(server=self.api_server)
+        #self.timeout = timeout
+        if domain:
+            self.domain = domain
+        client_args = APIClientArgs(server=self.api_server,port=self.port)
         self.client= APIClient(client_args)
         if self.client.check_fingerprint() is False:
                 print("Could not get the server's fingerprint - Check connectivity with the server.")
                 exit(1)
 
         # login to server:
-        login_res = self.client.login(self.username, self.password)
+        if domain:
+            login_res = self.client.login(self.username,self.password,False,self.domain)
+        else:
+            login_res = self.client.login(self.username,self.password)
 
         if login_res.success is False:
             print("Login failed:\n{}".format(login_res.error_message))
