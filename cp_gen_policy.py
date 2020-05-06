@@ -57,7 +57,7 @@ def netmask_to_cidr(netmask):
 list_of_hosts=[]
 list_of_networks=[]
 list_of_services=[]
-# Open Secure Track csv
+# Open Secure Track csv and parse lines for src, dst, services
 with open('st.csv', newline='', encoding='utf-8') as f:
     reader = csv.reader(f)
     for row in reader:
@@ -121,7 +121,7 @@ for item in list_of_services:
 
 
 # Instance Class Object and login
-cp=CP.CP("192.168.173.81","admin","admin123")
+cp=CP.CP("192.168.173.86","andy","admin123","tch01")
 
 # Check for duplicate IP Object
 
@@ -148,10 +148,52 @@ for item in list_of_networks:
             print (item, obj_dictionary[item[1]])
     else:
         cp.add_network(item[0],item[1],item[2])
-# Check for duplicate TCP port
-# Todo 
-       
-# Check for duplicate TCP port
+
+# generate tcp and udp list from services list
+list_of_tcp_services=[]
+list_of_udp_services=[]
+
+for item in list_of_services:
+    print (item[2])
+    if item[2]=='TCP':
+        list_of_tcp_services.append(item)
+    if item[2]=='UDP':
+        list_of_udp_services.append(item)
+
+# check if tcp service exists, if not add ist to database
+obj_dictionary=cp.get_tcp_services_dict()
+
+for item in list_of_tcp_services:
+    #print (item[1])
+    for objects in obj_dictionary:
+        if item[1]==obj_dictionary[objects][0]['port']:
+            found=True
+            #print (item,obj_dictionary[objects][0]['port'])
+            break   
+    if found:    
+        print (item,obj_dictionary[objects][0]['name'],obj_dictionary[objects][0]['port'])
+        found=False
+    else:
+        print ("Add service {}".format(item[1]))
+        cp.add_service_tcp(item[0],item[1])
+
+obj_dictionary=cp.get_udp_services_dict()
+
+for item in list_of_udp_services:
+    #print (item[1])
+    for objects in obj_dictionary:
+        if item[1]==obj_dictionary[objects][0]['port']:
+            found=True
+            #print (item,obj_dictionary[objects][0]['port'])
+            break   
+    if found:    
+        print (item,obj_dictionary[objects][0]['name'],obj_dictionary[objects][0]['port'])
+        found=False
+    else:
+        print ("Add service {}".format(item[1]))
+        cp.add_service_udp(item[0],item[1])
+
+# Check for duplicate UDP port
 # Todo 
 
 # End of object generation
@@ -179,7 +221,7 @@ cp.commit()
 print ("rulebase generation")
 with open('st.csv', newline='', encoding='utf-8') as f:
     reader = csv.reader(f)
-
+    position=1
     for row in reader:
         #print(row[0],row[2])
         if (row):
@@ -244,12 +286,13 @@ with open('st.csv', newline='', encoding='utf-8') as f:
                     service="Any"
                     comment=row[4]
 
-                mydict={"name": row[0], "layer": "New_Standard_Package_1 Network", "position": "top", "action": "accept","track" : {
-      "type" : "Log" }, "source": [src], "destination":[ dst ], "comments" : comment  }
+                mydict={"name": row[0], "layer": "New_Standard_Package_1 Network", "position": position, "action": "accept","track" : {
+      "type" : "Log" }, "source": [src], "destination":[ dst ], "service": service, "comments" : comment  }
                 response = cp.call_api("add-access-rule",mydict)
                 if response.success:
                     print("The rule: '{}' has been added successfully".format(mydict['name']))
-                    print ("name: {} src: {} dst: {} srv: {} comment: {}".format(row[0],src,dst,service,comment))
+                    #print ("name: {} src: {} dst: {} srv: {} comment: {}".format(row[0],src,dst,service,comment))
+                    position+=1
                 else:
                     print ("Error adding rule {}".format(row[0]))
 

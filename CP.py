@@ -25,7 +25,9 @@ from cpapi import APIClient, APIClientArgs
 
 
 class CP:
-
+    """ Wrapper for APIClientArgs, APIClient
+        Parameter: ip-addr mgmgt, username, password, optional domain,port
+    """
     def __init__(self, ipaddr, username, password, domain=None, port="443"):
 
         self.api_server = ipaddr
@@ -56,6 +58,9 @@ class CP:
     
     
     def add_rule(self, mydict):
+        """ add rule
+            Parameter: name, payload
+        """
 
         # add a rule to the top of the "Network" layer
         #add_rule_response = self.client.api_call("add-access-rule",
@@ -70,7 +75,10 @@ class CP:
             
         
     def get_hosts(self):
-        
+            """ get hosts
+                parameter: none
+                returns list of hosts
+            """
 
             list_of_hosts = []
             for x in range(100):  # max 5000 hosts
@@ -91,7 +99,9 @@ class CP:
             return(list_of_hosts)
     
     def add_host(self,name,ipaddr):
-                  
+            """ add host
+                Parameter: name, ipaddr
+            """      
             
             response = self.client.api_call("add-host", {"name": name,  "ip-address": ipaddr, 'set-if-exists': True, 'ignore-warnings': True} )
 
@@ -104,7 +114,9 @@ class CP:
                 return(-1)
     
     def add_network(self,name,subnet,subnetmask):
-
+            """ add netork object
+                Parameter: name, subnet, subnetmask
+            """
                 
             response = self.client.api_call("add-network", {'name': name, 'subnet': subnet, 'subnet-mask': subnetmask} )
             #pprint.pprint(response)
@@ -114,9 +126,41 @@ class CP:
                 return(0)
             else:
                 return(-1)
+        
+    def add_service_tcp(self,name,port):
+            """ add service tcp 
+                Parameter: name,port
+            """         
+            
+            response = self.client.api_call("add-service-tcp", {"name": name,  "port": port, 'set-if-exists': False, 'match-for-any': False} )
+
+            #pprint.pprint(response)
+            if response.success:
+                #print (len(response.as_dict()))
+                print("service: {} added successfull".format(name))
+                return(0)
+            else:
+                return(-1)
+
+    def add_service_udp(self,name,port):
+            """ add service udp 
+                Parameter: name,port
+            """     
+            
+            response = self.client.api_call("add-service-udp", {"name": name,  "port": port, 'set-if-exists': False, 'match-for-any': False} )
+
+            #pprint.pprint(response)
+            if response.success:
+                #print (len(response.as_dict()))
+                print("service: {} added successfull".format(name))
+                return(0)
+            else:
+                return(-1)
+
 
     def get_networks(self):
-
+        """ returns list of networks
+        """
         list_of_networks = []
         for x in range(100):  # max 5000 hosts
 
@@ -137,7 +181,8 @@ class CP:
         return(list_of_networks)
 
     def get_services_tcp(self):
-
+        """ returns list of tcp services
+        """
         list_of_services=[]
 
         for x in range(100):  # max 5000 hosts
@@ -159,10 +204,12 @@ class CP:
         return(list_of_services)
     
     def get_services_udp(self):
+        """ returns list of udp services
+        """
 
         list_of_services=[]
 
-        for x in range(100):  # max 5000 hosts
+        for x in range(100):  # max 50000 
 
             offset = x*500
             response = self.client.api_call("show-services-udp", {"limit": 500,  "offset": offset,  "details-level" : "standard" } )
@@ -190,7 +237,8 @@ class CP:
         "limit" : 50,
         "offset" : 0,
         "details-level" : "standard"
-        }       
+        }
+        returns list of policy packages       
         """
         response=self.client.api_call ("show-packages", {"limit" : 50,"offset" : 0,"details-level" : "standard" } )
         if response.success:
@@ -201,6 +249,8 @@ class CP:
 
 
     def commit(self):
+        """ commit changes on management
+        """
         
         response = self.client.api_call("publish", {})
         if response.success:
@@ -211,6 +261,10 @@ class CP:
             return(-1)  
 
     def call_api(self,call,item=None):
+        """ Wrapper for api_call 
+            callnmae e.g add-host
+            payload e.g {"name":"test123", "ip-address": "1.2.3.4"}
+        """
 
         if (item==None):
             response = self.client.api_call(call)
@@ -224,7 +278,8 @@ class CP:
             return(response)  
         
     def logout(self):
-
+        """ logout of management
+        """
         response = self.client.api_call("logout")
         if response.success:
             print("Logout was successfull.")
@@ -257,6 +312,9 @@ class CP:
         return obj_dictionary
 
     def get_network_dict(self):
+        """ returns dictionary of networks, index is subnet
+        """
+
         
         obj_dictionary={}
      
@@ -278,6 +336,8 @@ class CP:
 
 
     def get_tcp_services_dict(self):
+        """ returns dictionary of tcp services, index is Name
+        """
         
         obj_dictionary={}
      
@@ -299,6 +359,8 @@ class CP:
         return( obj_dictionary)
 
     def get_udp_services_dict(self):
+        """ returns dictionary of udp services, index is Name
+        """
         
         obj_dictionary={}
      
