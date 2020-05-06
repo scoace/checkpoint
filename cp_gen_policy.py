@@ -5,45 +5,7 @@ import struct
 import cpapi
 import CP
 
-""" def get_host_dict():
-    mylist=cp.get_hosts()
 
-    
-    obj_dictionary={}
-
-
-    for host in mylist:
-        ipaddr = host.get("ipv4-address")
-        if ipaddr is None:
-            print(host["name"] + " has no IPv4 address. Skipping...")
-            continue
-        host_data = {"name": host["name"], "uid": host["uid"]}
-        if ipaddr in obj_dictionary:
-            
-            obj_dictionary[ipaddr] += [host_data]  # '+=' modifies the list in place
-        else:
-            obj_dictionary[ipaddr] = [host_data] 
-    return obj_dictionary
-
-def get_network_dict():
-    obj_dictionary={}
-
-    mylist=cp.get_networks()
-
-    for network in mylist:
-        subnet = network.get("subnet4")
-        if subnet is None:
-            continue
-        else:
-            netmask = network.get("subnet-mask")
-        network_data = {"name": network["name"], "uid": network["uid"],"subnet4": network["subnet4"],"subnet-mask": network["subnet-mask"]}
-        if subnet in obj_dictionary:
-            obj_dictionary[subnet] += [network_data]
-        else:
-            obj_dictionary[subnet] = [network_data]
-    return( obj_dictionary)
-       
- """
 
 def cidr_to_netmask(cidr):
     network, net_bits = cidr.split('/')
@@ -107,19 +69,9 @@ with open('st.csv', newline='', encoding='utf-8') as f:
                     if mylist not in list_of_services:
                         list_of_services.append(mylist)
 
-#list_of_hosts = list(set(list_of_hosts))
-#list_of_networks = list(dict.fromkeys(list_of_networks))
-""" list_of_hosts.sort()
-list_of_networks.sort()
-list_of_services.sort()
-for item in list_of_hosts:
-    print (item)
-for item in list_of_networks:
-    print (item)
-for item in list_of_services:
-     print (item) """
 
 
+#"api-key" : "rSAotPs5GYdduCluv5JbyQ=="
 # Instance Class Object and login
 cp=CP.CP("192.168.173.86","andy","admin123","tch01")
 
@@ -131,7 +83,7 @@ obj_dictionary=cp.get_host_dict() # dict of hosts, key is IP
 for item in list_of_hosts:
     #print (item[1])
     if item[1] in obj_dictionary:
-        print (item, obj_dictionary[item[1]])
+        print ("IP: {} already exist as {}".format(item[1], obj_dictionary[item[1]]))
     else:
         cp.add_host(item[0],item[1])
 
@@ -145,7 +97,7 @@ for item in list_of_networks:
         # print (item[2])
         if ( item[2] == obj_dictionary[item[1]][0]["subnet-mask"] ):
            
-            print (item, obj_dictionary[item[1]])
+            print ("Subnet: {} already exists as {}".format(item, obj_dictionary[item[1]]))
     else:
         cp.add_network(item[0],item[1],item[2])
 
@@ -216,7 +168,7 @@ host_dictionary=cp.get_host_dict()
 tcp_dictionary=cp.get_tcp_services_dict()
 udp_dictionary=cp.get_udp_services_dict()
 comment=""
-cp.commit()
+
 # Open csv and generate rules
 print ("rulebase generation")
 with open('st.csv', newline='', encoding='utf-8') as f:
