@@ -5,7 +5,8 @@ import struct
 import cpapi
 import CP
 
-
+tufin="y:/checkpoint/checkpoint/Last_policy.csv"
+Policy_Package="ISFW_new"
 
 def cidr_to_netmask(cidr):
     network, net_bits = cidr.split('/')
@@ -20,7 +21,7 @@ list_of_hosts=[]
 list_of_networks=[]
 list_of_services=[]
 # Open Secure Track csv and parse lines for src, dst, services
-with open('st.csv', newline='', encoding='utf-8') as f:
+with open(tufin, newline='', encoding='utf-8') as f:
     reader = csv.reader(f)
     for row in reader:
         #print(row[0],row[2])
@@ -114,7 +115,8 @@ for item in list_of_services:
 
 # check if tcp service exists, if not add ist to database
 obj_dictionary=cp.get_tcp_services_dict()
-
+# d = {'1': 'one', '3': 'three', '2': 'two', '5': 'five', '4': 'four'}
+# 'one' in d.values()
 for item in list_of_tcp_services:
     #print (item[1])
     for objects in obj_dictionary:
@@ -151,7 +153,7 @@ for item in list_of_udp_services:
 # End of object generation
 
 # Generate Policy Package
-mydict= {  "name" : "New_Standard_Package_1",
+mydict= {  "name" : Policy_Package,
             "comments" : "Tchibo Test",
             "color" : "green",
             "threat-prevention" : False,
@@ -171,7 +173,7 @@ comment=""
 
 # Open csv and generate rules
 print ("rulebase generation")
-with open('st.csv', newline='', encoding='utf-8') as f:
+with open(tufin, newline='', encoding='utf-8') as f:
     reader = csv.reader(f)
     position=1
     for row in reader:
@@ -231,14 +233,12 @@ with open('st.csv', newline='', encoding='utf-8') as f:
                     service="Any"
                     comment="Any"
                     
-                elif (row[4]!="Any"):
-                    service="Any"
-                    coment=row[4],row[3]
+                
                 else:
                     service="Any"
                     comment=row[4]
-
-                mydict={"name": row[0], "layer": "New_Standard_Package_1 Network", "position": position, "action": "accept","track" : {
+                PP=Policy_Package+" Network"
+                mydict={"name": row[0], "layer": PP , "position": position, "action": "accept","track" : {
       "type" : "Log" }, "source": [src], "destination":[ dst ], "service": service, "comments" : comment  }
                 response = cp.call_api("add-access-rule",mydict)
                 if response.success:
@@ -252,6 +252,7 @@ with open('st.csv', newline='', encoding='utf-8') as f:
 
 
 
-
+# publish changes
 cp.commit()
+# logout
 cp.logout()
