@@ -3,7 +3,7 @@ import pprint
 import base64
 
 
-client=CP.CP("192.168.173.81","admin","admin123")
+client=CP.CP("192.168.173.87","admin","admin123")
 
 
 """ mydict=client.get_host_dict()
@@ -24,6 +24,7 @@ response=client.call_api("run-script",{
   "targets" : [ "CP-MGMT" ]
 })
 mydict = response.as_dict()
+print (mydict)
 mystr=mydict['data']['tasks'][0]['task-details'][0]['responseMessage']
 
 pprint.pprint (mydict['data']['tasks'][0]['task-details'][0]['responseMessage'])
