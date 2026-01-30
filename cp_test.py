@@ -1,9 +1,16 @@
 import CP
 import pprint 
 import base64
+import credentials
 
 
-client=CP.CP("192.168.173.81","admin","admin123")
+ipaddr=credentials.ipaddr
+username=credentials.username
+password=credentials.password
+
+
+client=CP.CP(ipaddr,username, password)
+
 
 
 """ mydict=client.get_host_dict()
@@ -21,9 +28,10 @@ for item in mydict:
 response=client.call_api("run-script",{
   "script-name" : "Script Example: List files under / dir",
   "script" : "ls -l /",
-  "targets" : [ "CP-MGMT" ]
+  "targets" : [ "mgmt" ]
 })
 mydict = response.as_dict()
+print (mydict)
 mystr=mydict['data']['tasks'][0]['task-details'][0]['responseMessage']
 
 pprint.pprint (mydict['data']['tasks'][0]['task-details'][0]['responseMessage'])
