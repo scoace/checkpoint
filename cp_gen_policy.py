@@ -4,6 +4,13 @@ import socket
 import struct
 import cpapi
 import CP
+import credentials # import ip, username, password
+
+# Instance Class Object and login
+ipaddr=credentials.ipaddr
+username=credentials.username
+password=credentials.password
+client=CP.CP(ipaddr,username, password)
 
 tufin = "y:/checkpoint/checkpoint/Last_policy.csv"
 Policy_Package = "ISFW_new"
@@ -74,9 +81,9 @@ with open(tufin, newline="", encoding="utf-8") as f:
                         list_of_services.append(mylist)
 
 
-# "api-key" : "rSAotPs5GYdduCluv5JbyQ=="
-# Instance Class Object and login
-cp = CP.CP("192.168.173.86", "andy", "admin123", "tch01")
+
+
+
 
 # Check for duplicate IP Object
 
@@ -163,7 +170,7 @@ for item in list_of_udp_services:
 # Generate Policy Package
 mydict = {
     "name": Policy_Package,
-    "comments": "Tchibo Test",
+    "comments": "Test",
     "color": "green",
     "threat-prevention": False,
     "access": True,
