@@ -1,9 +1,15 @@
 import CP
 import pprint
 import base64
+import credentials
 
 
-client = CP.CP("192.168.173.87", "admin", "admin123")
+ipaddr=credentials.ipaddr
+username=credentials.username
+password=credentials.password
+
+
+client=CP.CP(ipaddr,username, password)
 
 # print (response.data['responseMessage'])
 response = client.call_api(
