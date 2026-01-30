@@ -1,10 +1,15 @@
 import CP
 import pprint 
 import base64
+import credentials # import ip, username, password
 
-#API_KEY='YYqwcAfaLm4nGNrs2Z4Umg\\=\\='
-API_KEY=r'YYqwcAfaLm4nGNrs2Z4Umg=='
-client=CP.CP("192.168.173.90", api_key=API_KEY)
+# Instance Class Object and login
+ipaddr=credentials.ipaddr
+api_key=credentials.api_key
+client=CP.CP(ipaddr,username, password)
+
+# Alternatively, login with API Key
+client=CP.CP(ipaddr, api_key=API_KEY)
 
 mylist=client.get_hosts()
 
