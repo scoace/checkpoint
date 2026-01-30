@@ -1,29 +1,18 @@
 import CP
-import pprint
+import pprint 
 import base64
+import credentials
 
 
-list_of_hosts = []
-list_of_networks = []
-list_of_services = []
+ipaddr=credentials.ipaddr
+username=credentials.username
+password=credentials.password
 
-# print("##################################################################")
-client = CP.CP("192.168.173.87", "admin", "admin123")
-if client == -1:
-    print("Login failed")
-    exit(1)
 
-obj_dictionary = client.get_host_dict()  # dict of hosts, key is IP
+client=CP.CP(ipaddr,username, password)
 
-# for item in obj_dictionary:
-print("Hosts: IP Name UID")
-for key, value in obj_dictionary.items():
-    print(key, value[0]["name"], value[0]["uid"])
+hosts=client.get_hosts()
 
-obj_dictionary = client.get_tcp_services_dict()  # dict of tcp_services, key is Name
-#pprint.pprint(obj_dictionary)
-print("TCP Services: Name Port UID")
-for key, value in obj_dictionary.items():
-    print(key, value[0]["port"], value[0]["uid"])
-    
-client.logout()
+for host in hosts:
+    pprint.pprint (host)
+    print("-----------------------------------------------------------------")
