@@ -1,9 +1,17 @@
 import CP
 import pprint 
 import base64
+import credentials # import ip, username, password
 
-#print("##################################################################")
-client=CP.CP("192.168.173.81","admin","admin123")
+ipaddr=credentials.ipaddr
+username=credentials.username
+password=credentials.password
+client=CP.CP(ipaddr,username, password)
+
+
+
+
+
 if client==-1:
     print ("Login failed")
     exit(1)
