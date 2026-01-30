@@ -2,15 +2,20 @@ import CP
 import pprint 
 import base64
 
-API-KEY="YYqwcAfaLm4nGNrs2Z4Umg=="
-
-client=CP.CP("192.168.173.90","admin","admin123")
+#API_KEY='YYqwcAfaLm4nGNrs2Z4Umg\\=\\='
+API_KEY=r'YYqwcAfaLm4nGNrs2Z4Umg=='
+client=CP.CP("192.168.173.90", api_key=API_KEY)
 
 mylist=client.get_hosts()
 
 for item in mylist:
     print (item['name'],item['ipv4-address'],item['color'])
     
+mylist=client.get_networks()
+
+for item in mylist:
+    if 'subnet4' in item and item['subnet4']:
+        print(item['name'], item['subnet4'], item['color'])
 
 mydict=client.get_policy_packages()
 

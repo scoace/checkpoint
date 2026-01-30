@@ -25,3 +25,5 @@ obj_dictionary = client.get_tcp_services_dict()  # dict of tcp_services, key is 
 print("TCP Services: Name Port UID")
 for key, value in obj_dictionary.items():
     print(key, value[0]["port"], value[0]["uid"])
+    
+client.logout()

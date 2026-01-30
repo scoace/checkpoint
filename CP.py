@@ -30,14 +30,17 @@ class CP:
     Parameter: ip-addr mgmgt, username, password, optional domain,port
     """
 
-    def __init__(self, ipaddr, username, password, domain=None, port="443"):
+    def __init__(self, ipaddr, username=None, password=None,api_key=None, domain=None, port="443"):
 
         self.api_server = ipaddr
-        self.username = username
-        self.password = password
+        if username:
+            self.username = username
+            self.password = password
         self.port = port
         # self.urlbase = "https://{ipaddr}:{port}/".format(ipaddr=self.ipaddr,port=self.port)
         # self.timeout = timeout
+        if api_key:
+            self.api_key = api_key
         if domain:
             self.domain = domain
         client_args = APIClientArgs(server=self.api_server, port=self.port)
@@ -50,11 +53,18 @@ class CP:
 
         # login to server:
         if domain:
-            login_res = self.client.login(
+            if api_key:
+                login_res = self.client.login_with_api_key(self.api_key, self.domain)
+                    
+            else:
+                login_res = self.client.login(
                 self.username, self.password, False, self.domain
-            )
+                )
         else:
-            login_res = self.client.login(self.username, self.password)
+            if api_key:
+                login_res = self.client.login_with_api_key(self.api_key)
+            else:
+                login_res = self.client.login(self.username, self.password)
 
         if login_res.success is False:
             print(f"Login failed:\n{login_res.error_message}")
