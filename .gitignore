@@ -127,5 +127,6 @@ dmypy.json
 cp.code-workspace
 credentials.py
 fingerprint.txt
+.json
 # Pyre type checker
 .pyre/
