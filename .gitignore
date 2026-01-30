@@ -128,5 +128,6 @@ cp.code-workspace
 credentials.py
 fingerprint.txt
 .json
+test
 # Pyre type checker
 .pyre/
