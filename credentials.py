@@ -1,3 +1,3 @@
-ipaddr="192.168.173.87"
-username="admin"
-password="admin123"
+ipaddr="10.8.1.3"
+username="andy"
+password="hxxlUeud6iylsZB6rY8E"
