@@ -126,7 +126,8 @@ venv.bak/
 dmypy.json
 cp.code-workspace
 credentials.py
-fingerprint.txt
+fingerprints.txt
 .json
+test
 # Pyre type checker
 .pyre/
