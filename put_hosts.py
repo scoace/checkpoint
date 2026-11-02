@@ -8,9 +8,9 @@ import sys
 import os
 #import credentials
 
-ip = "10.8.146.3"
-user = "admin"
-password = "AdMin210*"
+ipaddr=credentials.ipaddr
+username=credentials.username
+password=credentials.password
 
 # Try to import the CP class - this might need adjustment based on actual CP.py structure
 try:
