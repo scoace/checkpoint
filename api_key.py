@@ -6,10 +6,10 @@ import credentials # import ip, username, password
 # Instance Class Object and login
 ipaddr=credentials.ipaddr
 api_key=credentials.api_key
-client=CP.CP(ipaddr,username, password)
+#client=CP.CP(ipaddr,username, password)
 
 # Alternatively, login with API Key
-client=CP.CP(ipaddr, api_key=API_KEY)
+client=CP.CP(ipaddr, api_key=api_key)
 
 mylist=client.get_hosts()
 

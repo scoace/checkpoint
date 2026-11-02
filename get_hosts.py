@@ -9,9 +9,14 @@ ipaddr=credentials.ipaddr
 username=credentials.username
 password=credentials.password
 
+#ip=credentials.ipaddr
+#api_key=credentials.api_key
+#cloud_mgmt=credentials.cloud_mgmt_id
 
-client=CP.CP(ipaddr,username, password)
 
+
+#client=CP.CP(ipaddr=ip,api_key=api_key, cloud_mgmt_id=cloud_mgmt)
+client=CP.CP(ipaddr,username=username, password=password)
 hosts=client.get_hosts()
 
 for host in hosts:

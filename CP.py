@@ -8,7 +8,7 @@
 #
 #
 #
-# written by: aaust@magellan-net.de
+# written by: andreas.aust@echoway.de
 # March 2020
 #
 
@@ -30,7 +30,7 @@ class CP:
     Parameter: ip-addr mgmgt, username, password, optional domain,port
     """
 
-    def __init__(self, ipaddr, username=None, password=None,api_key=None, domain=None, port="443"):
+    def __init__(self, ipaddr, username=None, cloud_mgmt_id=None, password=None,api_key=None, domain=None, port="443"):
 
         self.api_server = ipaddr
         if username:
@@ -43,7 +43,12 @@ class CP:
             self.api_key = api_key
         if domain:
             self.domain = domain
-        client_args = APIClientArgs(server=self.api_server, port=self.port)
+        if cloud_mgmt_id:
+            self.cloud_mgmt_id= cloud_mgmt_id
+            client_args = APIClientArgs(server=self.api_server, port=self.port,cloud_mgmt_id=self.cloud_mgmt_id)
+        else:
+            client_args = APIClientArgs(server=self.api_server, port=self.port)
+
         self.client = APIClient(client_args)
         if self.client.check_fingerprint() is False:
             print(
@@ -115,7 +120,7 @@ class CP:
                     break
         return list_of_hosts
 
-    def add_host(self, name, ipaddr):
+    def add_host(self, name, ipaddr, color):
         """add host
         Parameter: name, ipaddr
         """
@@ -125,6 +130,7 @@ class CP:
             {
                 "name": name,
                 "ip-address": ipaddr,
+                "color": color,
                 "set-if-exists": True,
                 "ignore-warnings": True,
             },
@@ -203,7 +209,7 @@ class CP:
     def get_networks(self):
         """returns list of networks"""
         list_of_networks = []
-        for x in range(100):  # max 5000 hosts
+        for x in range(100):  # max 5000 
 
             offset = x * 500
             response = self.client.api_call(
@@ -307,20 +313,28 @@ class CP:
             return -1
 
     def call_api(self, call, item=None):
-        """Wrapper for api_call
-        callname e.g add-host
-        payload e.g {"name":"test123", "ip-address": "1.2.3.4"}
+        """Call an API command and return its response, including on failure.
+
+        call must be a non-empty command name, e.g. "add-host".
+        item is an optional payload dictionary. Client exceptions propagate.
         """
+        if not isinstance(call, str):
+            raise TypeError("call must be a string")
+        if not call.strip():
+            raise ValueError("call must not be empty")
+        if item is not None and not isinstance(item, dict):
+            raise TypeError("item must be a dictionary or None")
 
         if item is None:
             response = self.client.api_call(call)
         else:
             response = self.client.api_call(call, item)
         if response.success:
-            print("The call was successful.")
-            return response
+            print(f"API call '{call}' was successful.")
         else:
-            print("The call failed")
+            error_message = response.error_message or "Unknown API error"
+            print(f"API call '{call}' failed: {error_message}", file=sys.stderr)
+        return response
 
     def logout(self):
         """logout of management"""

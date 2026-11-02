@@ -6,8 +6,8 @@ import credentials # import ip, username, password
 ipaddr=credentials.ipaddr
 username=credentials.username
 password=credentials.password
-client=CP.CP(ipaddr,username, password)
 
+client=CP.CP(ipaddr,username=username, password=password)
 
 
 
@@ -18,7 +18,13 @@ if client==-1:
 layers = client.call_api("show-access-layers")
 pp=client.get_policy_packages()
 print (pp)
-item={"name": "Network", "details-level": "standard", "use-object-dictionary": "false" ,"show-hits": "true","limit":500,"offset":0}
+for item in pp:
+    print(item['name'])
+    name=item['name']
+    
+    
+item={"name": name, "details-level": "standard", "use-object-dictionary": "false" ,"show-hits": "true","limit":500,"offset":0}
+print ("Item: {}".format(item))
 response=client.call_api("show-access-rulebase",item)
 if response.success:
     #print (len(response['data]))
