@@ -7,7 +7,7 @@ __pycache__/
 *.so
 *.json
 *.csv
-*.xlsv
+*.xlsx
 *.txt
 fitbit*
 Module*
